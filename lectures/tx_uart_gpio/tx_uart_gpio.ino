@@ -1,30 +1,36 @@
 const int TX_PIN = 2;
-const int BIT_TIME = 104;  // ~9600 baud (104 µs)
+const int BIT_TIME = 104; // ~9600 baud
 
 void uartSendByte(uint8_t data) {
-  // Start bit
-  digitalWrite(TX_PIN, LOW);
+  digitalWrite(TX_PIN, LOW);   // Start bit
   delayMicroseconds(BIT_TIME);
 
-  // Data bits
   for (int i = 0; i < 8; i++) {
     digitalWrite(TX_PIN, (data >> i) & 1);
     delayMicroseconds(BIT_TIME);
   }
 
-  // Stop bit
-  digitalWrite(TX_PIN, HIGH);
+  digitalWrite(TX_PIN, HIGH);  // Stop bit
   delayMicroseconds(BIT_TIME);
+}
+
+void uartSendString(const char *s) {
+  while (*s) {
+    uartSendByte(*s++);
+  }
 }
 
 void setup() {
   pinMode(TX_PIN, OUTPUT);
-  digitalWrite(TX_PIN, HIGH);  // Idle state
+  digitalWrite(TX_PIN, HIGH);
+
+  Serial.begin(115200);
 }
 
 void loop() {
-  uartSendByte('H');
-  uartSendByte('i');
-  uartSendByte('\n');
+  uartSendString("Hello\n");
+
+  Serial.println("Sent: Hello");
+
   delay(1000);
 }
